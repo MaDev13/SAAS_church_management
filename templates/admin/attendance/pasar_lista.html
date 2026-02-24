@@ -15,74 +15,75 @@
 <h1>{{ title }}</h1>
 
 {% if saved %}
-<p class="success-message" style="color: green; font-weight: bold;">
-  Asistencia guardada correctamente.
-</p>
+<p class="church-success-msg">Asistencia guardada correctamente.</p>
 {% endif %}
 
-<p><strong>Iglesia:</strong> {{ church.name }}</p>
+<p class="church-subtitle"><strong>Iglesia:</strong> {{ church.name }}</p>
 
 <form method="post">
   {% csrf_token %}
-  <div style="margin-bottom: 20px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
-    <div>
-      <label for="date">Fecha:</label>
-      <input type="date" name="date" id="date" value="{{ selected_date|date:'Y-m-d' }}" required>
-    </div>
-    <div>
-      <label for="service_type">Tipo de servicio:</label>
-      <select name="service_type" id="service_type">
-        {% for value, label in service_choices %}
-        <option value="{{ value }}" {% if service_type == value %}selected{% endif %}>{{ label }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div id="otro-container" style="{% if service_type != 'OTRO' %}display: none;{% endif %}">
-      <label for="service_notes">Especificar (cuando es Otro):</label>
-      <input type="text" name="service_notes" id="service_notes" maxlength="100"
-             value="{{ service_notes|default:'' }}" placeholder="ej: Conferencia, Bautizo...">
-    </div>
-    <div>
-      <button type="submit" class="button default">Guardar asistencia</button>
+  <div class="church-card">
+    <div class="church-form-row">
+      <div class="church-form-group">
+        <label for="date">Fecha</label>
+        <input type="date" name="date" id="date" value="{{ selected_date|date:'Y-m-d' }}" required>
+      </div>
+      <div class="church-form-group">
+        <label for="service_type">Tipo de servicio</label>
+        <select name="service_type" id="service_type">
+          {% for value, label in service_choices %}
+          <option value="{{ value }}" {% if service_type == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="church-form-group" id="otro-container" style="{% if service_type != 'OTRO' %}display: none;{% endif %}">
+        <label for="service_notes">Especificar (cuando es Otro)</label>
+        <input type="text" name="service_notes" id="service_notes" maxlength="100"
+               value="{{ service_notes|default:'' }}" placeholder="ej: Conferencia, Bautizo...">
+      </div>
+      <div class="church-form-group">
+        <label>&nbsp;</label>
+        <button type="submit" class="button default">Guardar asistencia</button>
+      </div>
     </div>
   </div>
 
-  <table style="width: 100%; border-collapse: collapse;">
-    <thead>
-      <tr style="background: #f0f0f0;">
-        <th style="text-align: left; padding: 8px;">Presente</th>
-        <th style="text-align: left; padding: 8px;">Nombre</th>
-        <th style="text-align: left; padding: 8px;">Teléfono</th>
-        <th style="text-align: left; padding: 8px;">Ministerio</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for member in members %}
-      <tr style="border-bottom: 1px solid #ddd;">
-        <td style="padding: 8px;">
-          <input type="checkbox" name="member_{{ member.id }}" id="member_{{ member.id }}"
-                 {% if member.id in attended_ids %}checked{% endif %}>
-        </td>
-        <td style="padding: 8px;">
-          <label for="member_{{ member.id }}">{{ member.last_name }}, {{ member.first_name }}</label>
-        </td>
-        <td style="padding: 8px;">{{ member.phone|default:"—" }}</td>
-        <td style="padding: 8px;">{{ member.ministry.name|default:"—" }}</td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="4" style="padding: 20px; color: #666;">
-          No hay miembros activos en esta iglesia. Agregue miembros en la sección Members.
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="church-table-wrap">
+    <table class="church-table">
+      <thead>
+        <tr>
+          <th style="width: 80px;">Presente</th>
+          <th>Nombre</th>
+          <th>Teléfono</th>
+          <th>Ministerio</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for member in members %}
+        <tr>
+          <td>
+            <input type="checkbox" name="member_{{ member.id }}" id="member_{{ member.id }}"
+                   {% if member.id in attended_ids %}checked{% endif %}>
+          </td>
+          <td>
+            <label for="member_{{ member.id }}">{{ member.last_name }}, {{ member.first_name }}</label>
+          </td>
+          <td>{{ member.phone|default:"—" }}</td>
+          <td>{{ member.ministry.name|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr class="church-empty-row">
+          <td colspan="4">
+            No hay miembros activos en esta iglesia. Agregue miembros en la sección Members.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </form>
 
-<p style="margin-top: 20px;">
-  <a href="{% url 'admin:attendance_attendance_changelist' %}">&larr; Volver a Asistencias</a>
-</p>
+<a href="{% url 'admin:attendance_attendance_changelist' %}" class="church-back-link">&larr; Volver a Asistencias</a>
 
 <script>
 document.getElementById('service_type').addEventListener('change', function() {

@@ -1,0 +1,13 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ request.LANGUAGE_CODE|default:'es' }}">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Refresh" content="0; url={% url 'admin:login' %}">
+  <title>{% translate 'Logging out' %}...</title>
+</head>
+<body>
+  <p>{% translate 'Redirecting to login' %}...</p>
+  <script>window.location.replace("{% url 'admin:login' %}");</script>
+</body>
+</html>

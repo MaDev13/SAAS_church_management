@@ -1,0 +1,116 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}Panel de administración | Church Management{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+  <a href="{% url 'admin:index' %}">
+    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/%3E%3C/svg%3E" alt="" width="24" height="24" style="vertical-align: middle; margin-right: 8px;">
+    GESTIÓN DE IGLESIAS
+  </a>
+</h1>
+{% endblock %}
+
+{% block usertools %}
+{% if has_permission %}
+<div id="user-tools" class="church-user-tools">
+  <div class="church-user-info">
+    <span class="church-user-label">{% translate 'Username' %}</span>
+    <strong class="church-user-name">{% if user.get_full_name %}{{ user.get_full_name }}{% elif user.get_short_name %}{{ user.get_short_name }}{% else %}{{ user.get_username }}{% endif %}</strong>
+  </div>
+  <div class="church-user-right">
+    <nav class="church-user-links" aria-label="{% translate 'User menu' %}">
+      <a href="{% url 'admin:accounts_user_change' user.pk %}">{% translate 'My profile' %}</a>
+      {% if site_url %}
+      <a href="{{ site_url }}">{% translate 'View site' %}</a>
+      {% endif %}
+      {% if user.is_active and user.is_staff %}
+        {% url 'django-admindocs-docroot' as docsroot %}
+        {% if docsroot %}
+        <a href="{{ docsroot }}">{% translate 'Documentation' %}</a>
+        {% endif %}
+      {% endif %}
+      {% if user.has_usable_password %}
+      <a href="{% url 'admin:password_change' %}">{% translate 'Change password' %}</a>
+      {% endif %}
+      <form id="logout-form" method="post" action="{% url 'admin:logout' %}" class="church-logout-form">
+        {% csrf_token %}
+        <button type="submit">{% translate 'Log out' %}</button>
+      </form>
+    </nav>
+    <button type="button" class="church-user-menu-btn" aria-label="{% translate 'More options' %}" aria-expanded="false" aria-haspopup="true">
+      <span aria-hidden="true">&#8942;</span>
+    </button>
+    <div class="church-user-dropdown" id="church-user-dropdown" hidden>
+      <a href="{% url 'admin:accounts_user_change' user.pk %}">{% translate 'My profile' %}</a>
+      {% if site_url %}
+      <a href="{{ site_url }}">{% translate 'View site' %}</a>
+      {% endif %}
+      {% if user.has_usable_password %}
+      <a href="{% url 'admin:password_change' %}">{% translate 'Change password' %}</a>
+      {% endif %}
+      <form method="post" action="{% url 'admin:logout' %}">
+        {% csrf_token %}
+        <button type="submit">{% translate 'Log out' %}</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="church-breadcrumbs-wrap">
+  <a href="javascript:history.back()" class="church-back-btn" title="{% translate 'Back' %}">
+    <span class="church-back-arrow" aria-hidden="true">←</span>
+    <span>{% translate 'Back' %}</span>
+  </a>
+</div>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'admin/css/custom_admin.css' %}">
+{% endblock %}
+
+{% block extrabody %}
+{{ block.super }}
+<span id="church-back-text" data-value="{% translate 'Back' %}" hidden aria-hidden="true"></span>
+<script>
+(function() {
+  /* Sustituir barra de migas por botón Volver en listados/formularios que la sobrescriben */
+  var breadcrumbs = document.querySelector('.breadcrumbs:not(.church-breadcrumbs-wrap)');
+  if (breadcrumbs && !breadcrumbs.querySelector('.church-back-btn')) {
+    var el = document.getElementById('church-back-text');
+    var backText = el ? el.getAttribute('data-value') : 'Volver';
+    breadcrumbs.classList.add('church-breadcrumbs-wrap');
+    breadcrumbs.innerHTML = '<a href="javascript:history.back()" class="church-back-btn" title="' + backText + '">' +
+      '<span class="church-back-arrow" aria-hidden="true">←</span><span>' + backText + '</span></a>';
+  }
+})();
+(function() {
+  var btn = document.querySelector('.church-user-menu-btn');
+  var dropdown = document.getElementById('church-user-dropdown');
+  if (btn && dropdown) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var open = dropdown.hasAttribute('hidden');
+      dropdown.toggleAttribute('hidden', !open);
+      btn.setAttribute('aria-expanded', open);
+    });
+    document.addEventListener('click', function(e) {
+      if (!dropdown.hasAttribute('hidden') && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+        dropdown.setAttribute('hidden', '');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+})();
+</script>
+{% endblock %}

@@ -5,9 +5,9 @@
 
 {% block content %}
 <h1>{{ title }}</h1>
-<p style="color: #c00;">{{ message }}</p>
-<p><a href="{% url 'admin:churches_church_add' %}">Crear iglesia</a></p>
-<p style="margin-top: 20px;">
-  <a href="{% url 'admin:index' %}">&larr; Volver al inicio</a>
-</p>
+<div class="church-card">
+  <p style="color: #c53030; font-weight: 500; margin: 0;">{{ message }}</p>
+  <p style="margin: 16px 0 0 0;"><a href="{% url 'admin:churches_church_add' %}" class="addlink">Crear iglesia</a></p>
+</div>
+<a href="{% url 'admin:index' %}" class="church-back-link">&larr; Volver al inicio</a>
 {% endblock %}

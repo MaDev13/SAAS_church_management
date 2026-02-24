@@ -48,7 +48,7 @@ class User(AbstractUser):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        related_name="users",
+        related_name="  ",
         db_index=True,
     )
     role = models.CharField(
