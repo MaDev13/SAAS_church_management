@@ -1,0 +1,26 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<p>Seleccione la iglesia para pasar la lista:</p>
+
+<ul>
+  {% for church in churches %}
+  <li style="margin: 10px 0;">
+    <a href="{% url 'admin:attendance_attendance_pasar_lista' %}?church={{ church.id }}">
+      {{ church.name }} ({{ church.city }}, {{ church.country }})
+    </a>
+  </li>
+  {% empty %}
+  <li>No hay iglesias registradas. <a href="{% url 'admin:churches_church_add' %}">Crear iglesia</a></li>
+  {% endfor %}
+</ul>
+
+<p style="margin-top: 20px;">
+  <a href="{% url 'admin:index' %}">&larr; Volver al inicio</a>
+</p>
+{% endblock %}

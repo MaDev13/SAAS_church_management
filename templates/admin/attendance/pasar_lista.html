@@ -1,0 +1,93 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Inicio</a>
+  &rsaquo; <a href="{% url 'admin:attendance_attendance_changelist' %}">Asistencias</a>
+  &rsaquo; {{ title }}
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+{% if saved %}
+<p class="success-message" style="color: green; font-weight: bold;">
+  Asistencia guardada correctamente.
+</p>
+{% endif %}
+
+<p><strong>Iglesia:</strong> {{ church.name }}</p>
+
+<form method="post">
+  {% csrf_token %}
+  <div style="margin-bottom: 20px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
+    <div>
+      <label for="date">Fecha:</label>
+      <input type="date" name="date" id="date" value="{{ selected_date|date:'Y-m-d' }}" required>
+    </div>
+    <div>
+      <label for="service_type">Tipo de servicio:</label>
+      <select name="service_type" id="service_type">
+        {% for value, label in service_choices %}
+        <option value="{{ value }}" {% if service_type == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div id="otro-container" style="{% if service_type != 'OTRO' %}display: none;{% endif %}">
+      <label for="service_notes">Especificar (cuando es Otro):</label>
+      <input type="text" name="service_notes" id="service_notes" maxlength="100"
+             value="{{ service_notes|default:'' }}" placeholder="ej: Conferencia, Bautizo...">
+    </div>
+    <div>
+      <button type="submit" class="button default">Guardar asistencia</button>
+    </div>
+  </div>
+
+  <table style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr style="background: #f0f0f0;">
+        <th style="text-align: left; padding: 8px;">Presente</th>
+        <th style="text-align: left; padding: 8px;">Nombre</th>
+        <th style="text-align: left; padding: 8px;">Teléfono</th>
+        <th style="text-align: left; padding: 8px;">Ministerio</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for member in members %}
+      <tr style="border-bottom: 1px solid #ddd;">
+        <td style="padding: 8px;">
+          <input type="checkbox" name="member_{{ member.id }}" id="member_{{ member.id }}"
+                 {% if member.id in attended_ids %}checked{% endif %}>
+        </td>
+        <td style="padding: 8px;">
+          <label for="member_{{ member.id }}">{{ member.last_name }}, {{ member.first_name }}</label>
+        </td>
+        <td style="padding: 8px;">{{ member.phone|default:"—" }}</td>
+        <td style="padding: 8px;">{{ member.ministry.name|default:"—" }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4" style="padding: 20px; color: #666;">
+          No hay miembros activos en esta iglesia. Agregue miembros en la sección Members.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</form>
+
+<p style="margin-top: 20px;">
+  <a href="{% url 'admin:attendance_attendance_changelist' %}">&larr; Volver a Asistencias</a>
+</p>
+
+<script>
+document.getElementById('service_type').addEventListener('change', function() {
+  var otroDiv = document.getElementById('otro-container');
+  otroDiv.style.display = this.value === 'OTRO' ? 'block' : 'none';
+});
+</script>
+{% endblock %}

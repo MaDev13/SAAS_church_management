@@ -1,0 +1,11 @@
+# Church Management SaaS - Base Dependencies
+Django>=5.0,<6
+djangorestframework>=3.14
+djangorestframework-simplejwt>=5.3
+psycopg[binary]>=3.1
+python-decouple>=3.8
+scikit-learn>=1.3
+celery>=5.3
+redis>=5.0
+django-cors-headers>=4.3
+django-filter>=24.0
